@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import {
   ApolloClient,
   InMemoryCache,
@@ -9,7 +10,7 @@ import {
 const GET_USERS = gql`
 query GetUsers {
   users{
-    usernameeee
+    username
   }
 }
 `;
@@ -21,11 +22,13 @@ function GetUsers(){
   if (error) return <p>Error :( {error.message}</p>;
 
   return data.users.map((user) => (
+    <Link to={`/${user.username}/messages`}>
     <div key={user.username}>
       <p>
         {user.username}
       </p>
     </div>
+    </Link>
   ));
 
 }
