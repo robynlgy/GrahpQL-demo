@@ -21,13 +21,7 @@ function NewUserForm() {
         username
       }
   }`;
-  const GET_USERS = gql`
-    query GetUsers {
-      users {
-        username
-      }
-    }
-  `;
+
   const [createUser, { data, loading, error }] = useMutation(CREATE_USER);
   if (loading) return "Submitting...";
   if (error) return `Submission error! ${error.message}`;
@@ -50,12 +44,6 @@ function NewUserForm() {
     } catch (err) {
       console.log("err.message", err.message);
     }
-
-    // if (error) {
-    //   return `Submission error! ${error.message}`;
-    // } else {
-    //   navigate("/users");
-    // }
   }
 
   const formInputsHTML = (

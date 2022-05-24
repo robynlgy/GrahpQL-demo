@@ -1,16 +1,16 @@
-import { useParams } from "react-router-dom"
+import { useParams, useNavigate } from "react-router-dom";
+
 import {
   ApolloClient,
   InMemoryCache,
   ApolloProvider,
   useQuery,
-  gql
+  gql,
 } from "@apollo/client";
 
-
-function GetMessages(){
-
+function GetMessages() {
   const { username } = useParams();
+  const navigate = useNavigate();
 
   const GET_MESSAGES = gql`
   query GetMessages {
@@ -28,14 +28,26 @@ function GetMessages(){
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error :( {error.message}</p>;
 
-  return data.user.messages.map((msg) => (
-    <div key={msg.id}>
-      <p>
-        {msg.body}
-      </p>
+  let messages = (
+    <div>
+      {data.user.messages.map((msg) => (
+        <div key={msg.id}>
+          <p>{msg.body}</p>
+        </div>
+      ))}
     </div>
-  ));
+  );
 
+  return (
+    <div>
+      {messages}
+      <div>
+        {/* <button onClick={() => navigate(`/${username}/addmessage`)}>
+          Add message
+        </button> */}
+      </div>
+    </div>
+  );
 }
 
 export default GetMessages;

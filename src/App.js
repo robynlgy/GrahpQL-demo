@@ -16,7 +16,7 @@ function App() {
           {/* <Route path="/:username" element={<GetUser />} /> */}
           <Route path="/:username/messages" element={<GetMessages />} />
           <Route path="/adduser" element={<NewUserForm />} />
-          {/* <Route path="/addmessage" element={<NewMessageForm />} /> */}
+          <Route path="/:username/addmessage" element={<NewMessageForm />} />
         </Routes>
       </BrowserRouter>
     </div>
