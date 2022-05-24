@@ -22,7 +22,20 @@ function NewUserForm() {
       }
   }`;
 
-  const [createUser, { data, loading, error }] = useMutation(CREATE_USER);
+  const GET_USERS = gql`
+  query GetUsers {
+    users {
+      username
+    }
+  }
+  `;
+
+  const [createUser, { data, loading, error }] = useMutation(CREATE_USER,{
+    refetchQueries: [
+      GET_USERS, // DocumentNode object parsed with gql
+      'GetUsers' // Query name
+    ],
+  });
   if (loading) return "Submitting...";
   if (error) return `Submission error! ${error.message}`;
 

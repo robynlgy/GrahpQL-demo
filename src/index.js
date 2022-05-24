@@ -6,10 +6,13 @@ import reportWebVitals from './reportWebVitals';
 import {
   ApolloClient,
   InMemoryCache,
-  ApolloProvider,
-  useQuery,
-  gql
+  ApolloProvider
 } from "@apollo/client";
+
+// interface IApolloClient {
+//   uri: string;
+//   cache: ()=>{}
+// }
 
 const client = new ApolloClient({
   uri: 'https://users-messages-gql.herokuapp.com/graphql',
@@ -27,20 +30,6 @@ root.render(
 
 
 
-
-
-// client
-//   .query({
-//     query: gql`
-//       query GetUsers {
-//         users{
-//           username
-//         }
-//       }
-//     `
-//   })
-//   .then(result => console.log(result))
-//   .catch(err=>console.log(err));
 
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))

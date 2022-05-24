@@ -42,9 +42,9 @@ function GetMessages() {
     <div>
       {messages}
       <div>
-        {/* <button onClick={() => navigate(`/${username}/addmessage`)}>
+        <button onClick={() => navigate(`/${username}/addmessage`)}>
           Add message
-        </button> */}
+        </button>
       </div>
     </div>
   );

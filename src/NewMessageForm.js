@@ -23,7 +23,23 @@ function NewMessageForm() {
       }
   }`;
 
-  const [createMessage, { data, loading, error }] = useMutation(CREATE_MESSAGE);
+  const GET_MESSAGES = gql`
+  query GetMessages {
+    user (username: "${username}") {
+      messages{
+        id
+        body
+      }
+    }
+  }
+  `;
+
+  const [createMessage, { data, loading, error }] = useMutation(CREATE_MESSAGE,{
+    refetchQueries: [
+      GET_MESSAGES, // DocumentNode object parsed with gql
+      'GetMessages' // Query name
+    ],
+  });
   if (loading) return "Submitting...";
   if (error) return `Submission error! ${error.message}`;
 
