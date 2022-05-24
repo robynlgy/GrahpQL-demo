@@ -13,10 +13,7 @@ function NewMessageForm(): ReactElement | string {
 
   const CREATE_MESSAGE = gql`
   mutation createMessage ($username: ID!, $body: String!){
-    createMessage (username: $username, body: $body)(
-      username: $username,
-      body: $body
-      ){
+    createMessage (username: $username, body: $body){
         id
         body
       }
@@ -38,15 +35,13 @@ function NewMessageForm(): ReactElement | string {
     body: string;
   }
 
-  interface NewMessage {
-    username: string;
-    body: string;
-  }
+  // interface NewMessage {
+  //   username: string;
+  //   body: string;
+  // }
 
 
-  const [createMessage, { data, loading, error }] = useMutation<
-  { createMessge: Message }
-  >(
+  const [createMessage, { data, loading, error }] = useMutation<{ createMessage: Message }>(
     CREATE_MESSAGE,
     {
       variables: { username: username, body: formData.body },

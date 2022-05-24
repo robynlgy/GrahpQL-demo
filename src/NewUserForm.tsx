@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useState, ReactElement } from "react";
 import { useNavigate } from "react-router-dom";
 import { gql, useMutation } from "@apollo/client";
 
-function NewUserForm() {
+function NewUserForm(): ReactElement | string {
   const initialValue = {
     username: "",
     firstName: "",
@@ -12,35 +12,48 @@ function NewUserForm() {
   const navigate = useNavigate();
 
   const CREATE_USER = gql`
-  mutation createUser{
-    createUser(
-      username: "${formData.username}",
-      first_name: "${formData.firstName}",
-      last_name: "${formData.lastName}"
-      ){
+    mutation createUser(
+      $username: ID!,
+      $first_name: String!,
+      $last_name: String!
+    ) {
+      createUser(
+        username: $username,
+        first_name: $first_name,
+        last_name: $last_name
+      ) {
         username
       }
-  }`;
-
-  const GET_USERS = gql`
-  query GetUsers {
-    users {
-      username
     }
-  }
   `;
 
-  const [createUser, { data, loading, error }] = useMutation(CREATE_USER,{
-    refetchQueries: [
-      GET_USERS, // DocumentNode object parsed with gql
-      'GetUsers' // Query name
-    ],
+  const GET_USERS = gql`
+    query GetUsers {
+      users {
+        username
+      }
+    }
+  `;
+
+  interface IUser {
+    username: string;
+  }
+
+  const [createUser, { data, loading, error }] = useMutation<{
+    createUser: IUser;
+  }>(CREATE_USER, {
+    variables: {
+      username: formData.username,
+      first_name: formData.firstName,
+      last_name: formData.lastName,
+    },
+    refetchQueries: [GET_USERS, "GetUsers"],
   });
   if (loading) return "Submitting...";
   if (error) return `Submission error! ${error.message}`;
 
   /** Update form input. */
-  function handleChange(evt) {
+  function handleChange(evt:React.ChangeEvent<HTMLInputElement>) {
     const { name, value } = evt.target;
     setFormData((fData) => ({
       ...fData,
@@ -49,13 +62,16 @@ function NewUserForm() {
   }
 
   /** Call parent function. */
-  async function handleSubmit(evt) {
+  async function handleSubmit(evt: React.FormEvent) {
     evt.preventDefault();
     try {
       await createUser();
-      navigate("/users")
+      navigate("/users");
     } catch (err) {
-      console.log("err.message", err.message);
+      if (err instanceof Error) {
+        console.log("err.message", err.message);
+      }
+      console.log("unexpected error:", err);
     }
   }
 
