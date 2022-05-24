@@ -1,22 +1,21 @@
-import { useState } from "react";
+import React, { useState, ReactElement } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { gql, useMutation } from "@apollo/client";
 
-function NewMessageForm() {
-
-  const { username }  = useParams();
+function NewMessageForm(): ReactElement | string {
+  const { username } = useParams();
 
   const initialValue = {
-    body: ""
+    body: "",
   };
   const [formData, setFormData] = useState(initialValue);
   const navigate = useNavigate();
 
   const CREATE_MESSAGE = gql`
-  mutation createMessage{
-    createMessage(
-      username: "${username}",
-      body: "${formData.body}"
+  mutation createMessage ($username: ID!, $body: String!){
+    createMessage (username: $username, body: $body)(
+      username: $username,
+      body: $body
       ){
         id
         body
@@ -24,27 +23,41 @@ function NewMessageForm() {
   }`;
 
   const GET_MESSAGES = gql`
-  query GetMessages {
-    user (username: "${username}") {
-      messages{
-        id
-        body
+    query GetMessages($username: ID!) {
+      user(username: $username) {
+        messages {
+          id
+          body
+        }
       }
     }
-  }
   `;
 
-  const [createMessage, { data, loading, error }] = useMutation(CREATE_MESSAGE,{
-    refetchQueries: [
-      GET_MESSAGES, // DocumentNode object parsed with gql
-      'GetMessages' // Query name
-    ],
-  });
+  interface Message {
+    id: number;
+    body: string;
+  }
+
+  interface NewMessage {
+    username: string;
+    body: string;
+  }
+
+
+  const [createMessage, { data, loading, error }] = useMutation<
+  { createMessge: Message }
+  >(
+    CREATE_MESSAGE,
+    {
+      variables: { username: username, body: formData.body },
+      refetchQueries: [GET_MESSAGES, "GetMessages"],
+    }
+  );
   if (loading) return "Submitting...";
   if (error) return `Submission error! ${error.message}`;
 
   /** Update form input. */
-  function handleChange(evt) {
+  function handleChange(evt: React.ChangeEvent<HTMLTextAreaElement>) {
     const { name, value } = evt.target;
     setFormData((fData) => ({
       ...fData,
@@ -53,13 +66,16 @@ function NewMessageForm() {
   }
 
   /** Call parent function. */
-  async function handleSubmit(evt) {
+  async function handleSubmit(evt: React.FormEvent) {
     evt.preventDefault();
     try {
       await createMessage();
       navigate(`/${username}/messages`);
     } catch (err) {
-      console.log("err.message", err.message);
+      if (err instanceof Error) {
+        console.log("err.message", err.message);
+      }
+      console.log("unexpected error:", err);
     }
   }
 

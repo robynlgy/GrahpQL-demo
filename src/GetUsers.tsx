@@ -1,5 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useQuery, gql } from "@apollo/client";
+import { ReactElement } from "react";
 
 const GET_USERS = gql`
   query GetUsers {
@@ -17,7 +18,7 @@ interface Users {
   users: User[];
 }
 
-function GetUsers() {
+function GetUsers(): ReactElement {
   const { loading, error, data } = useQuery<Users>(GET_USERS);
   const navigate = useNavigate();
 
@@ -26,15 +27,14 @@ function GetUsers() {
 
   return (
     <div>
-      <button onClick={() => navigate(`/adduser`)}>
-        Add user
-      </button>
+      <button onClick={() => navigate(`/adduser`)}>Add user</button>
       <div>
-        {data.users.map((user) => (
-          <Link key={user.username} to={`/${user.username}/messages`}>
-            <p>{user.username}</p>
-          </Link>
-        ))}
+        {data &&
+          data.users.map((user) => (
+            <Link key={user.username} to={`/${user.username}/messages`}>
+              <p>{user.username}</p>
+            </Link>
+          ))}
       </div>
     </div>
   );
